@@ -6,18 +6,18 @@ import 'package:momentum_bank/app/utils/app_preferences.dart';
 
 class LoginViewModel {
   Future<LoginResponse> loginUser({String username, String password, bool returnSecureToken}) async {
-    LoginResponse loginResponse;
+    LoginResponse _response;
     try {
       LoginRequest _request = LoginRequest(
         email: username,
         password: password,
         returnSecureToken: returnSecureToken,
       );
-      loginResponse = await LoginRepository().loginUser(loginRequest: _request);
+      _response = await LoginRepository().loginUser(loginRequest: _request);
     } catch (e) {
       print(e);
     }
-    return loginResponse;
+    return _response;
   }
 
   LoginResponse getLoggedInUser() {

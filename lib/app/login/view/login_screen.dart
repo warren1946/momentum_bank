@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:momentum_bank/app/client_details/view/client_details_screen.dart';
 import 'package:momentum_bank/app/login/model/login_response.dart';
 import 'package:momentum_bank/app/login/view_model/login_view_model.dart';
 import 'package:momentum_bank/app/utils/app_alert_dialog.dart';
@@ -89,7 +90,7 @@ class LoginScreen extends StatelessWidget with InputValidationMixin {
 
           if (_response != null) {
             progressDialog.dismiss();
-            //Navigator.push(context, MaterialPageRoute(builder: (context) => CymlessHomeScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ClientDetailsScreen()));
           } else {
             progressDialog.dismiss();
             AppAlertDialog().showSnackBar(context: context, text: 'Invalid username and or password!');
