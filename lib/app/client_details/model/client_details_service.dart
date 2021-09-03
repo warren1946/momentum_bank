@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:momentum_bank/app/login/model/login_response.dart';
@@ -24,5 +25,27 @@ class ClientDetailsService extends BaseService {
       throw FetchDataException('No Internet Connection');
     }
     return responseJson;
+  }
+
+  Future updateClientAccounts({List<int> accountList}) async {
+    dynamic _response;
+    try {
+      LoginResponse _loginResponse = LoginViewModel().getLoggedInUser();
+      String _url = '${AppConstants.API_BASE_CLIENT_URL}/${_loginResponse.localId}/accounts.json?auth=${_loginResponse.idToken}';
+      print(AppConstants.API_BASE_CLIENT_URL);
+      print('request: $_url');
+
+      final response = await client.put(
+        Uri.parse(_url),
+        headers: {"content-type": "application/json"},
+        body: jsonEncode(
+          accountList,
+        ),
+      );
+      _response = response.body;
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return _response;
   }
 }

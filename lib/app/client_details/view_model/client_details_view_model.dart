@@ -11,4 +11,14 @@ class ClientDetailsViewModel {
     }
     return _response;
   }
+
+  Future updateClientAccounts({List<int> accountList}) async {
+    dynamic _response;
+    try {
+      _response = await ClientDetailsRepository().updateClientAccounts(accountList: accountList);
+    } catch (e) {
+      print(e);
+    }
+    return _response;
+  }
 }

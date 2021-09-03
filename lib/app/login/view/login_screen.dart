@@ -42,6 +42,7 @@ class LoginScreen extends StatelessWidget with InputValidationMixin {
   Widget _usernameField() {
     return TextFormField(
       controller: usernameController,
+      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         icon: Icon(Icons.person),
         hintText: 'Username',

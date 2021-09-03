@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:momentum_bank/app/client_details/model/client_details_response.dart';
 import 'package:momentum_bank/app/client_details/view_model/client_details_view_model.dart';
+import 'package:momentum_bank/app/utils/app_alert_dialog.dart';
+import 'package:ndialog/ndialog.dart';
 
 class ClientDetailsScreen extends StatefulWidget {
   @override
@@ -10,6 +12,9 @@ class ClientDetailsScreen extends StatefulWidget {
 
 class _ClientDetailsScreen extends State<ClientDetailsScreen> {
   ClientDetailsResponse _clientDetailsResponse;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _accountNumberController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +76,79 @@ class _ClientDetailsScreen extends State<ClientDetailsScreen> {
           },
         ),
       ),
+      floatingActionButton: _addNewAccount(context),
+    );
+  }
+
+  Widget _addNewAccount(BuildContext context) {
+    return FloatingActionButton.extended(
+      icon: Icon(Icons.add),
+      label: Text('Add Account'),
+      onPressed: () async {
+        await showInformationDialog(context);
+      },
+    );
+  }
+
+  Future<void> showInformationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (context) {
+        bool isChecked = false;
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            content: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _accountNumberController,
+                      validator: (value) {
+                        {
+                          return value.isNotEmpty ? null : "Please enter an account number!";
+                        }
+                      },
+                      decoration: InputDecoration(hintText: "Account Number"),
+                      maxLength: 10,
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                  ],
+                )),
+            title: Text('New Account'),
+            actions: <Widget>[
+              InkWell(
+                child: Text('OK   '),
+                onTap: () async {
+                  if (_formKey.currentState.validate()) {
+                    ProgressDialog progressDialog =
+                        AppAlertDialog().progressDialog(context: context, text: 'Adding Account, Please wait...');
+                    progressDialog.show();
+
+                    ClientDetailsResponse clientData = await loadData();
+                    clientData.accounts.add(int.parse(_accountNumberController.text));
+                    dynamic _response = await ClientDetailsViewModel().updateClientAccounts(accountList: clientData.accounts);
+
+                    if (_response != null) {
+                      _accountNumberController.clear();
+                      setState(() {});
+                      progressDialog.dismiss();
+                      AppAlertDialog().showSnackBar(context: context, text: 'New account added successfully');
+                      Navigator.of(context).pop(true);
+                    } else {
+                      progressDialog.dismiss();
+                      AppAlertDialog().showSnackBar(context: context, text: 'An error has occurred, please try again!');
+                    }
+                  }
+                },
+              ),
+            ],
+          );
+        });
+      },
     );
   }
 
